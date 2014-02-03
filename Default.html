@@ -1,0 +1,592 @@
+<!doctype HTML>
+<html>
+	<head>
+		<title>Script</title>
+		<style>
+		body
+			{
+			text-align:center;
+			background-color: pink;
+			}
+		</style>
+		
+		<script>
+		
+		function calcVar(t)
+			{
+			var firstData = document.getElementById("frst").value;
+			var secondData = document.getElementById("scnd").value;
+			
+			//alert(calc(secondData.split("")));
+			
+			var frstArray = firstData.split("");
+			
+			frstArray = SortVar(frstArray);
+			frstArray = addMultiply(frstArray);
+			frstArray = fixBracets(frstArray);
+			
+			console.log(frstArray);
+
+			findOperation(frstArray)
+			
+			console.log(frstArray);
+			
+			frstArray = calcArray(frstArray);
+			
+			expandBr(frstArray);
+			
+			//frstArray = findOdd(frstArray);
+			
+			document.getElementById("frst").value = frstArray.join("");
+			}
+		
+		function findOdd(varArray)
+			{
+			var stop = false,
+				depth = 0,
+				pos,
+				pos2;
+			
+			for (var i=0; i<varArray.length; i++)
+				{
+				if (varArray[i]=="^" && varArray[i+1]=="0")
+					{
+					pos = i;
+					}
+				}
+			
+			for (var i=pos -1; stop==false; i--)
+				{
+				if (varArray[i] == "(")
+					{
+					depth -= 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth += 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (depth <= 0)
+					{
+					stop = true;
+					pos2 = i;
+					break;
+					}
+				}
+			
+			varArray.splice(pos2-1, pos-pos2+4, 1);
+			return varArray
+			}
+		
+		function expandBr(varArray)
+			{
+			for (var i=0; i<varArray.length; i++)
+				{
+				if (varArray[i] == "*" && varArray[i+1] == "(" && varArray[i-1] == "(")
+					{
+					
+					}
+				else if (varArray[i] == "*" && varArray[i+1] == "(" && varArray[i-1] == ")")
+					{
+					alert(bracetLength(varArray, i));
+					}
+				}
+			}
+		
+		function bracetLength(varArray, pos)
+			{
+			var depth = 0;
+			var bExist=false;
+			var bLength=0;
+			
+			//parantes efter
+			for (var i=pos +1; i<varArray.length; i++)
+				{
+				if (varArray[i] == "(")
+					{
+					depth += 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth -= 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (varArray[i] == "*" || varArray[i] == "/" || varArray[i] == "^")
+					{
+					
+					}
+				
+				if (varArray[i] == "+" || varArray[i] == "-")
+					{
+					bLength+=1;
+					}
+				
+				if (depth <= 0)
+					{
+					break;
+					}
+				}
+
+			//parantes före
+			for (var i=pos -1; i>0; i--)
+				{
+				if (varArray[i] == "(")
+					{
+					depth -= 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth += 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (varArray[i] == "+" && depth == 1 || varArray[i] == "-" && depth == 1)
+					{
+					bLength-=1;
+					}
+				
+				if (depth <= 0)
+					{
+					break;
+					}
+				}
+			
+			if(bLength==0)
+				{
+				return true
+				}
+			else
+				{
+				return false
+				}
+			}
+		
+		function returnPos(varArray, pos, direction)
+			{
+			var depth = 0;
+			var bExist=false;
+			var bLength=0;
+			
+			//parantes efter
+			if(direction=="+")
+				{
+				for (var i=pos; i<varArray.length; i++)
+					{
+					if (varArray[i] == "(")
+						{
+						depth += 1;
+						}
+					else if (varArray[i] == ")")
+						{
+						depth -= 1;
+						}
+				
+					if (depth == -1)
+						{
+						alert("error: no depth");
+						return "end"
+						}
+				
+					if (depth <= 0)
+						{
+						i++;
+						break;
+						}
+					}
+				}
+			else
+				{
+				//parantes före
+				for (var i=pos; i>0; i--)
+					{
+					if (varArray[i] == "(")
+						{
+						depth -= 1;
+						}
+					else if (varArray[i] == ")")
+						{
+						depth += 1;
+						}
+					
+					if (depth == -1)
+						{
+						alert("error: no depth");
+						return "end"
+						}
+				
+					if (depth <= 0)
+						{
+						i--;
+						break;
+						}
+					}
+				}
+			
+			return i
+			}
+		
+		function calc(frst,opp,scnd)
+			{
+			if (!opp)
+				{
+				if(frst.length==3)
+					{
+					scnd = frst[2],
+					opp = frst[1],
+					frst = frst[0];
+					}
+				else
+					{
+					return
+					}
+				}
+			
+			var result;
+			
+			if(opp=="^")
+				{
+				result = Math.pow(parseFloat(frst), parseFloat(scnd))
+				if(!isNaN(result) && scnd=="0")
+					{
+					result=1;//"result:1"
+					}
+				}
+			else if(opp=="*")
+				{
+				result = parseFloat(frst)*parseFloat(scnd)
+				}
+			else if(opp=="/")
+				{
+				result = parseFloat(frst)/parseFloat(scnd)
+				}
+			else if(opp=="+")
+				{
+				result = parseFloat(frst)+parseFloat(scnd)
+				}
+			else if(opp=="-")
+				{
+				result = parseFloat(frst)-parseFloat(scnd)
+				}
+			
+			return result
+			}
+		
+		function calcArray(varArray)
+			{
+			var stop=false;
+			var prevDepth,
+				depth=0;
+			
+			for (var i=0; i<varArray.length; i++)
+				{
+				if (varArray[i] == ")")
+					{
+					if (varArray[i-2] == "(")
+						{
+						}
+					else if (varArray[i-4] == "(")
+						{
+						var result = calc(varArray[i-3],varArray[i-2],varArray[i-1]);
+						if (!isNaN(result))
+							{
+							varArray.splice(i-4, 5, result);
+							i-=4;
+							}
+						else if(result == "result:1")
+							{
+						
+							}
+						}
+					}
+				}
+			
+			for (var i=0; stop==true; i++)
+				{
+				if (varArray[i] == "(")
+					{
+					depth += 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth -= 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (depth < prevDepth)
+					{
+					stop = true;
+					if (varArray[i-2] == "(")
+						{
+						}
+					else if (varArray[i-4] == "(")
+						{
+						var result = calc(varArray[i-3],varArray[i-2],varArray[i-1]);
+						if (!isNaN(result))
+							{
+							varArray.splice(i-4, 5, result);
+							}
+						else if(result == "result:1")
+							{
+							
+							}
+						}
+					else
+						{
+						alert("error: invalid grouping");
+						}
+					}
+				
+				prevDepth = depth;
+				}
+			
+			return varArray
+			}
+		
+		function SortVar(varArray)
+			{
+			var array = [];
+			var prevInt = -2;
+			
+			for(var i=0;i<varArray.length;i++)
+				{
+				if(!isNaN(parseFloat(varArray[i])) || varArray[i] == "." || varArray[i] ==",")
+					{
+					if (prevInt==i-1)
+						{
+						array[array.length-1] = array[array.length-1] + varArray[i];
+						}
+					else
+						{
+						array[array.length] = varArray[i];
+						}
+					prevInt = i;
+					}
+				else
+					{
+					array[array.length] = varArray[i];
+					}
+				}
+			return array;
+			}
+		
+		function fixBracets(varArray)
+			{
+			var array = [];
+			var lastBracet = -5;
+			
+			for(var i=0;i<varArray.length;i++)
+				{
+				if(varArray[i] =="(")
+					{
+					lastBracet = i;
+					}
+				else if(varArray[i] ==")")
+					{
+					if(lastBracet==i-2)
+						{
+						varArray.splice(i,1);
+						varArray.splice(i-2,1);
+						i--;
+						}
+					if(lastBracet==i-3 && varArray[i-2]=="-")
+						{
+						varArray.splice(i,1);
+						
+						var neg = varArray[i-1];
+						neg *= -1;
+						
+						varArray.splice(i-1,1,neg);
+						varArray.splice(i-2,1);
+						varArray.splice(i-3,1);
+						i-=2;
+						}
+					else if(lastBracet==i-3)
+						{
+						varArray.splice(i,1);
+						varArray.splice(i-2,1);
+						varArray.splice(i-3,1);
+						i-=2;
+						}
+					}
+				}
+			return varArray;
+			}
+		
+		function addMultiply(varArray)
+			{
+			var array = [];
+			var prevMult = -2;
+			
+			for(var i=0;i<varArray.length;i++)
+				{
+				//add before, de som inte är kompatibla med multiplikation innan
+				if (varArray[i]!="+" && varArray[i]!="-" && varArray[i]!="/" && varArray[i]!="*" && varArray[i]!="^" && varArray[i]!=")" && prevMult==i-1)
+					{
+					array[array.length]="*";
+					}
+				//add after, de som inte är kompatibla med multiplikation efter
+				if (varArray[i]!="+" && varArray[i]!="-" && varArray[i]!="/" && varArray[i]!="*" && varArray[i]!="^" && varArray[i]!="(")
+					{
+					prevMult = i;
+					}
+				array[array.length]=varArray[i];
+				}
+			return array;
+			}
+		
+		function findOperation(array)
+			{
+			
+			for (var i=0; i<array.length; i++)
+				{
+				if (array[i]=="^" || array[i]=="root")
+					{
+					//alert("id: " + array[i] + " pos: " + i);
+					i += addBrakets(array, i);
+					//exp[exp.length] = i;
+					}
+				}
+			for (var i=0; i<array.length; i++)
+				{
+				if (array[i]=="/" || array[i]=="*")
+					{
+					//alert("id: " + array[i] + " pos: " + i);
+					i += addBrakets(array, i);
+					//scndOpp[scndOpp.length] = i;
+					}
+				}
+			for (var i=0; i<array.length; i++)
+				{
+				if (array[i]=="+" || array[i]=="-")
+					{
+					//alert("id: " + array[i] + " pos: " + i);
+					i += addBrakets(array, i);
+					//frstOpp[frstOpp.length] = i;
+					}
+				}
+			
+			}
+		
+		function addBrakets(varArray, pos)
+			{
+			var depth = 0;
+			var stop=false;
+			var bExist=false;
+			var insertLast;
+			
+			//parantes efter
+			for (var i=pos +1; stop==false; i++)
+				{
+				if (varArray[i] == "(")
+					{
+					depth += 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth -= 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (depth <= 0)
+					{
+					stop = true;
+					frstBracket=i+1;
+					if (varArray[i+1]==")")
+						{
+						//alert("bE")
+						bExist = true;
+						}
+					}
+				}
+			stop=false;
+			//parantes före
+			for (var i=pos -1; stop==false; i--)
+				{
+				if (varArray[i] == "(")
+					{
+					depth -= 1;
+					}
+				else if (varArray[i] == ")")
+					{
+					depth += 1;
+					}
+				
+				if (depth == -1)
+					{
+					alert("error: no depth");
+					return "end"
+					}
+				
+				if (depth <= 0)
+					{
+					stop = true;
+					if(bExist != true || varArray[i-1] != "(")
+						{
+						varArray.splice(frstBracket,0,")");
+						varArray.splice(i,0,"(");
+						}
+					else
+						{
+						//alert("bE both");
+						}
+					}
+				}
+			return 1
+			}
+		
+		function onload()
+			{
+			document.getElementById("frst").onkeydown=function(e)
+				{
+				if(e.keyCode==13)
+					{
+					calcVar();
+					}
+				}
+			
+			document.getElementById("scnd").onkeydown=function(e)
+				{
+				if(e.keyCode==13)
+					{
+					calcVar();
+					}
+				}
+			}
+		
+		</script>
+	</head>
+	<body onload="onload()">
+		<input type="text" id="frst" size="40" autofocus>
+		=
+		<input type="text" id="scnd" size="40">
+		<input type="button" value="Calculate" onclick="calcVar(this)">
+		<input type="button" value="c2" onclick="findOdd(document.getElementById('frst').value.split(''))">
+	</body>
+</html>
